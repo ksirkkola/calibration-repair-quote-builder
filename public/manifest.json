@@ -1,0 +1,9 @@
+{
+  "author": "Thermetrics",
+  "appId": "6a96c7ca4e30a7909804cfc0",
+  "version": "1.7.1",
+  "versionDescription": "Fixed unreadable text on dark mode: the ticket name/status header bar and the read-only Case # field both had a hardcoded gray.50 (near-white) background that ignored dark mode, washing out the light-colored text on top of it. Both now use a proper color-mode-aware background.",
+  "config": {
+    "fields": {}
+  }
+}
