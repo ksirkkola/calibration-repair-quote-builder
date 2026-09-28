@@ -318,7 +318,7 @@ export function buildQuoteDocDefinition(input: QuotePdfInput): TDocumentDefiniti
         table: {
           widths: ['40%', '60%'],
           body: [
-            [{ text: 'Billing INFORMATION (CLIENT to fill)', colSpan: 2, bold: true, fillColor: '#f0f0f0' }, {}],
+            [{ text: 'Billing INFORMATION', colSpan: 2, bold: true, fillColor: '#f0f0f0' }, {}],
             ['Contact Name', meta.billingContactName || ''],
             ['Email Address', meta.billingEmail || ''],
             ['Phone Number', meta.billingPhone || ''],

@@ -1,8 +1,8 @@
 {
   "author": "Thermetrics",
   "appId": "6a96c7ca4e30a7909804cfc0",
-  "version": "1.8.1",
-  "versionDescription": "Removed the 'Client Site (requires environmental chamber...) or TMX Test Lab (...)' column from every calibration matrix on the PDF — that's internal support/scheduling knowledge about where the work happens, not something that belongs on the client-facing quote. Applies to all 10 matrix sheets (wording varies slightly per sheet, e.g. 'TMX Test Lab ONLY', 'Client Site or TMX Test Lab (Client site recommended)') — verified every sheet drops the column cleanly before publishing.",
+  "version": "1.8.2",
+  "versionDescription": "PDF: renamed the 'Billing INFORMATION (CLIENT to fill)' section header to just 'Billing INFORMATION' — Thermetrics fills this in already, it's not left for the client to complete.",
   "config": {
     "fields": {}
   }
