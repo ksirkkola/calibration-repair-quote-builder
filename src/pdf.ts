@@ -169,13 +169,48 @@ function fmtDate(v: string): string {
   return new Date(v).toLocaleDateString();
 }
 
-function infoRow(label: string, value: string): Content {
+// Renders the "QUOTE #/CASE #/..." and "LOCATION OF ANNUAL CALIBRATION/..."
+// blocks as ONE borderless table (5 columns: label, value, gap, label, value)
+// instead of two independent side-by-side `stack`s. This matters because a
+// `stack` has no concept of a shared row height — when a value on one side
+// wraps to multiple lines (a long quote number, a full street address),
+// that stack simply gets taller while the other stack's rows don't move, so
+// unrelated label/value pairs drift into visual alignment with each other
+// (confirmed from a real generated PDF: "LOCATION OF ANNUAL CALIBRATION"
+// running straight into the address with no gap). A real pdfmake `table`
+// gives every row one height (the max of its cells), keeping both sides in
+// lockstep no matter how much either side wraps. Values are left-aligned so
+// wrapped multi-line values stay readable (right-aligning would make each
+// wrapped line jump to a different horizontal position).
+function infoTable(left: [string, string][], right: [string, string][]): Content {
+  const rowCount = Math.max(left.length, right.length);
+  const body: TableCell[][] = [];
+  for (let i = 0; i < rowCount; i++) {
+    const [lLabel, lValue] = left[i] ?? ['', ''];
+    const [rLabel, rValue] = right[i] ?? ['', ''];
+    body.push([
+      { text: lLabel, bold: true, fontSize: 9 },
+      { text: lValue || '—', fontSize: 9 },
+      { text: '' },
+      { text: rLabel, bold: true, fontSize: 9 },
+      { text: rValue || '—', fontSize: 9 },
+    ]);
+  }
   return {
-    columns: [
-      { text: label, bold: true, fontSize: 9, width: '55%' },
-      { text: value || '—', fontSize: 9, width: '45%' },
-    ],
-    margin: [0, 1, 0, 1] as [number, number, number, number],
+    // All 5 columns are fixed pt widths, not 'auto'/'*' — this table's total
+    // must fit A4's ~515pt content width (595.28 - 80 margins) MINUS the
+    // 'noBorders' layout's own built-in cell padding (4pt each side of each
+    // internal column boundary = 32pt total across 5 columns), which isn't
+    // reflected in the widths array at all. Using '*' or 'auto' without
+    // accounting for that padding silently overflowed text past the page's
+    // right edge instead of wrapping it (confirmed by rendering an actual
+    // PDF) — 75/118/14/155/118 sums to 480 + 32 padding = 512, safely under
+    // the 515.28pt budget, and 118pt fits ~26-27 characters per line at
+    // fontSize 9, wrapping long values (addresses, quote numbers) onto
+    // multiple lines cleanly instead of clipping them.
+    table: { widths: [75, 118, 14, 155, 118], body },
+    layout: 'noBorders',
+    margin: [0, 0, 0, 15],
   };
 }
 
@@ -258,30 +293,21 @@ export function buildQuoteDocDefinition(input: QuotePdfInput): TDocumentDefiniti
         ],
         margin: [0, 0, 0, 15],
       },
-      {
-        columns: [
-          {
-            width: '50%',
-            stack: [
-              infoRow('QUOTE #', meta.quoteNumber),
-              infoRow('CASE #', meta.caseNumber),
-              infoRow('CLIENT', clientName),
-              infoRow('REQUESTED BY', meta.requestedBy),
-              infoRow('DATE', fmtDate(meta.quoteDate)),
-            ],
-          },
-          {
-            width: '50%',
-            stack: [
-              infoRow('LOCATION OF ANNUAL CALIBRATION', meta.locationOfAnnualCalibration),
-              infoRow('QUOTE EXPIRES', fmtDate(meta.quoteExpires)),
-              infoRow('QUOTE ISSUED BY', 'Kristin Sirkkola, Thermetrics Europe Oy'),
-              infoRow('PAYMENT TERMS', `Wire Transfer, ${totals.paymentTerms}`),
-            ],
-          },
+      infoTable(
+        [
+          ['QUOTE #', meta.quoteNumber],
+          ['CASE #', meta.caseNumber],
+          ['CLIENT', clientName],
+          ['REQUESTED BY', meta.requestedBy],
+          ['DATE', fmtDate(meta.quoteDate)],
         ],
-        margin: [0, 0, 0, 15],
-      },
+        [
+          ['LOCATION OF ANNUAL CALIBRATION', meta.locationOfAnnualCalibration],
+          ['QUOTE EXPIRES', fmtDate(meta.quoteExpires)],
+          ['QUOTE ISSUED BY', 'Kristin Sirkkola, Thermetrics Europe Oy'],
+          ['PAYMENT TERMS', `Wire Transfer, ${totals.paymentTerms}`],
+        ],
+      ),
       {
         table: {
           widths: ['40%', '60%'],

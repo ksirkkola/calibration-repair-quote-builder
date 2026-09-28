@@ -103,14 +103,24 @@ export async function fetchCalibrationRates(
 
   const byType = (t: string) => activities.filter((a) => str(a, CALIBRATION_RATES.fields.rowType) === t);
 
-  const countries: CountryRate[] = byType('country').map((a) => ({
-    name: a.name,
-    daysTraveling: num(a, CALIBRATION_RATES.fields.daysTraveling),
-    airfare: num(a, CALIBRATION_RATES.fields.airfare),
-    carPerDay: num(a, CALIBRATION_RATES.fields.carPerDay),
-    hotelPerDay: num(a, CALIBRATION_RATES.fields.hotelPerDay),
-    foodPerDay: num(a, CALIBRATION_RATES.fields.foodPerDay),
-  }));
+  const countries: CountryRate[] = byType('country')
+    .map((a) => ({
+      name: a.name,
+      daysTraveling: num(a, CALIBRATION_RATES.fields.daysTraveling),
+      airfare: num(a, CALIBRATION_RATES.fields.airfare),
+      carPerDay: num(a, CALIBRATION_RATES.fields.carPerDay),
+      hotelPerDay: num(a, CALIBRATION_RATES.fields.hotelPerDay),
+      foodPerDay: num(a, CALIBRATION_RATES.fields.foodPerDay),
+    }))
+    // listAll returns activities in whatever order Hailer's API defaults to
+    // (not the dataset's `priority` field) — sort explicitly so the
+    // Destination dropdown is predictable: "In-house (no travel)" always
+    // first, then every real country A-Z, regardless of API return order.
+    .sort((a, b) => {
+      if (a.name === NO_TRAVEL) return -1;
+      if (b.name === NO_TRAVEL) return 1;
+      return a.name.localeCompare(b.name);
+    });
 
   const systemsByName = new Map<string, SystemRate>();
   byType('system').forEach((a) => {

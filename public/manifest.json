@@ -1,8 +1,8 @@
 {
   "author": "Thermetrics",
   "appId": "6a96c7ca4e30a7909804cfc0",
-  "version": "1.7.1",
-  "versionDescription": "Fixed unreadable text on dark mode: the ticket name/status header bar and the read-only Case # field both had a hardcoded gray.50 (near-white) background that ignored dark mode, washing out the light-colored text on top of it. Both now use a proper color-mode-aware background.",
+  "version": "1.8.0",
+  "versionDescription": "Two fixes: (1) the PDF header (QUOTE #/CASE #/... and LOCATION OF ANNUAL CALIBRATION/...) used two independent side-by-side columns that drifted out of sync whenever a value wrapped (a long quote number, a full address) — rebuilt as one aligned 4-column table so rows stay in sync and long values wrap cleanly instead of overlapping or clipping past the page edge. (2) The Destination dropdown now lists countries alphabetically (A-Z) with 'In-house (no travel)' always pinned first, instead of whatever order Hailer's API happened to return them in.",
   "config": {
     "fields": {}
   }
