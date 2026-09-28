@@ -29,12 +29,18 @@ function matrixCell(v: string): Content {
 
 // Trims a matrix sheet down for print: drops any column that's entirely
 // blank across every row (several sheets carry unused placeholder columns —
-// e.g. Hotplates' "Items to Picked" was never filled in), and drops any
-// column literally titled "Notes" — that's for internal use only, not the
+// e.g. Hotplates' "Items to Picked" was never filled in); drops any column
+// literally titled "Notes"; and drops the "Client Site (requires use of
+// environmental chamber...) or TMX Test Lab (...)" column — every matrix's
+// version of that column (wording varies per sheet, but always contains
+// "Client Site" or "TMX Test Lab") is internal support/scheduling knowledge
+// about WHERE the calibration happens, not something that belongs on the
 // client-facing quote.
 function trimSheetForPrint(sheet: { headers: string[]; rows: string[][] }): { headers: string[]; rows: string[][] } {
   const keep = sheet.headers.map((h, i) => {
-    if (h.trim().toLowerCase() === 'notes') return false;
+    const lower = h.trim().toLowerCase();
+    if (lower === 'notes') return false;
+    if (lower.includes('client site') || lower.includes('tmx test lab')) return false;
     const allBlank = sheet.rows.every((r) => !r[i] || !r[i].trim());
     return !allBlank;
   });
