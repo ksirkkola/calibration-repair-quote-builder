@@ -38,7 +38,9 @@ export const TRIPS_IHS = {
     poNumber: '6a211716b129621437c16b3c',
     poReceived: '6a211716b129621437c16b3d',
     poAmount: '6a211716b129621437c16b3e',
-    amountToInvoice: '6a327545506c8ccc619c5667', // € — the quoted TOTAL gets written here
+    // The old 'Amount to Invoice' field was deleted; TMXE Total now holds "how much to invoice for this trip",
+    // so the quoted per-year total is written there. (Key name kept so call sites don't change.)
+    amountToInvoice: '6a425ee640e736dacafe81ed',
     tmxeTotal: '6a425ee640e736dacafe81ed',
     clientContactPerson: '6a799e8aef5cbedbd85d3631', // activitylink -> Contact persons
     clientContactEmail: '6a75d1557163b2968df43e2f',

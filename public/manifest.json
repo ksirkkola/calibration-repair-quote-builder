@@ -1,8 +1,8 @@
 {
   "author": "Thermetrics",
   "appId": "6a96c7ca4e30a7909804cfc0",
-  "version": "1.8.2",
-  "versionDescription": "PDF: renamed the 'Billing INFORMATION (CLIENT to fill)' section header to just 'Billing INFORMATION' — Thermetrics fills this in already, it's not left for the client to complete.",
+  "version": "1.8.3",
+  "versionDescription": "Fixed saving the quoted amount to the ticket: the 'Amount to Invoice' field no longer exists on Trips / IHS, so the quoted per-year total (and the amount on future-year sibling tickets) is now written to TMXE Total, which holds how much to invoice for the trip.",
   "config": {
     "fields": {}
   }
